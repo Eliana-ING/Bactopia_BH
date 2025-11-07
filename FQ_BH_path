@@ -1,0 +1,8 @@
+BASE="/mnt/shared/projects/niab/edellolm"
+FASTQ_DIR="$BASE/01.RawData"        
+PREP="~/scratch/bactopia_prep"
+OUT="~/scratch/bactopia_results"
+WORK="~/scratch/bactopia_work"
+DATASETS="~/scratch/bactopia_datasets"
+
+mkdir -p "$PREP" "$OUT" "$WORK" "$DATASETS"
