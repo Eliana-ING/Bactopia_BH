@@ -20,3 +20,27 @@ for d in "$FASTQ_DIR"/PL70_*; do
 
   echo "Creati: $(basename "$r1_out")  $(basename "$r2_out")"
 done
+
+
+
+# *bactopia prepare va in confusione con gli undercore e quindi lanciamo uno script per la pulizia dei nomi dei campioni*
+
+# directory con i fastq fusi in _R1/_R2
+CLEAN=~/scratch/bactopia_prep/reads_merged
+OUTFOFN=~/scratch/bactopia_prep/samples.tsv
+
+# intestazione TSV nel formato che Bactopia si aspetta
+printf "sample\truntype\tgenome_size\tspecies\tr1\tr2\textra\n" > "$OUTFOFN"
+
+# una riga per ogni campione (usa 4.5 Mb come genome size indicativo)
+for r1 in "$CLEAN"/*_R1.fq.gz; do
+  s=$(basename "$r1" | sed 's/_R1\.fq\.gz$//')
+  r2="$CLEAN/${s}_R2.fq.gz"
+  [ -f "$r2" ] || { echo "ATTENZIONE: manca R2 per $s"; continue; }
+
+  printf "%s\tpaired-end\t4500000\tBacillus halotolerans\t%s\t%s\t\n" \
+    "$s" "$r1" "$r2" >> "$OUTFOFN"
+done
+
+# controlla le prime righe
+column -t "$OUTFOFN" | head
