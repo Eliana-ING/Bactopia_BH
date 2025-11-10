@@ -1,0 +1,70 @@
+# istallazione Netflow e java
+
+export NXF_VER=22.10.8
+mkdir -p ~/bin && cd ~/bin
+curl -fsSL https://get.nextflow.io | bash
+curl -L -o nextflow https://github.com/nextflow-io/nextflow/releases/download/v$NXF_VER/nextflow
+chmod +x nextflow
+(bactopia) edellolm@gruffalo:~/bin$ export PATH="$HOME/bin:$PATH"
+(bactopia) edellolm@gruffalo:~/bin$ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+(bactopia) edellolm@gruffalo:~/bin$ unset JAVA_CMD
+(bactopia) edellolm@gruffalo:~/bin$ unset JAVA_HOME
+(bactopia) edellolm@gruffalo:~/bin$ which java
+/mnt/apps/users/edellolm/conda/envs/bactopia/bin/java
+(bactopia) edellolm@gruffalo:~/bin$ java -version
+openjdk version "11.0.1" 2018-10-16 LTS
+OpenJDK Runtime Environment Zulu11.2+3 (build 11.0.1+13-LTS)
+OpenJDK 64-Bit Server VM Zulu11.2+3 (build 11.0.1+13-LTS, mixed mode)
+(bactopia) edellolm@gruffalo:~/bin$ nextflow -version
+CAPSULE: Downloading dependency org.multiverse:multiverse-core:jar:0.7.0
+CAPSULE: Downloading dependency org.apache.ivy:ivy:jar:2.5.1
+CAPSULE: Downloading dependency org.slf4j:jul-to-slf4j:jar:1.7.36
+CAPSULE: Downloading dependency org.slf4j:jcl-over-slf4j:jar:1.7.36
+CAPSULE: Downloading dependency commons-io:commons-io:jar:2.11.0
+CAPSULE: Downloading dependency org.codehaus.jsr166-mirror:jsr166y:jar:1.7.0
+CAPSULE: Downloading dependency commons-codec:commons-codec:jar:1.15
+CAPSULE: Downloading dependency com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava      
+CAPSULE: Downloading dependency com.beust:jcommander:jar:1.35
+CAPSULE: Downloading dependency io.nextflow:nf-commons:jar:22.10.8
+CAPSULE: Downloading dependency org.codehaus.groovy:groovy:jar:3.0.13
+CAPSULE: Downloading dependency ch.grengine:grengine:jar:1.3.0
+CAPSULE: Downloading dependency jline:jline:jar:2.9
+CAPSULE: Downloading dependency ch.qos.logback:logback-core:jar:1.2.11
+CAPSULE: Downloading dependency com.github.zafarkhaja:java-semver:jar:0.9.0
+CAPSULE: Downloading dependency io.nextflow:nf-httpfs:jar:22.10.8
+CAPSULE: Downloading dependency org.codehaus.groovy:groovy-nio:jar:3.0.13
+CAPSULE: Downloading dependency javax.mail:mail:jar:1.4.7
+CAPSULE: Downloading dependency org.eclipse.jgit:org.eclipse.jgit:jar:6.2.0.202206071550-r
+CAPSULE: Downloading dependency com.google.code.findbugs:jsr305:jar:3.0.2
+CAPSULE: Downloading dependency org.codehaus.groovy:groovy-templates:jar:3.0.13
+CAPSULE: Downloading dependency commons-lang:commons-lang:jar:2.6
+CAPSULE: Downloading dependency org.iq80.leveldb:leveldb-api:jar:0.12
+CAPSULE: Downloading dependency org.codehaus.gpars:gpars:jar:1.2.1
+CAPSULE: Downloading dependency ch.qos.logback:logback-classic:jar:1.2.11
+CAPSULE: Downloading dependency org.jsoup:jsoup:jar:1.15.4
+CAPSULE: Downloading dependency org.slf4j:log4j-over-slf4j:jar:1.7.36
+CAPSULE: Downloading dependency com.google.guava:guava:jar:31.1-jre
+CAPSULE: Downloading dependency org.objenesis:objenesis:jar:2.1
+CAPSULE: Downloading dependency com.esotericsoftware.kryo:kryo:jar:2.24.0
+CAPSULE: Downloading dependency org.slf4j:slf4j-api:jar:1.7.36
+CAPSULE: Downloading dependency org.codehaus.groovy:groovy-xml:jar:3.0.13
+CAPSULE: Downloading dependency org.yaml:snakeyaml:jar:2.0
+CAPSULE: Downloading dependency com.google.code.gson:gson:jar:2.10.1
+CAPSULE: Downloading dependency com.google.errorprone:error_prone_annotations:jar:2.11.0
+CAPSULE: Downloading dependency io.nextflow:nextflow:jar:22.10.8
+CAPSULE: Downloading dependency dev.failsafe:failsafe:jar:3.1.0
+CAPSULE: Downloading dependency com.google.j2objc:j2objc-annotations:jar:1.3
+CAPSULE: Downloading dependency javax.activation:activation:jar:1.1.1
+CAPSULE: Downloading dependency org.pf4j:pf4j:jar:3.4.1
+CAPSULE: Downloading dependency org.iq80.leveldb:leveldb:jar:0.12
+CAPSULE: Downloading dependency org.codehaus.groovy:groovy-json:jar:3.0.13
+CAPSULE: Downloading dependency com.google.guava:failureaccess:jar:1.0.1
+CAPSULE: Downloading dependency com.googlecode.javaewah:JavaEWAH:jar:1.1.13
+CAPSULE: Downloading dependency org.checkerframework:checker-qual:jar:3.12.0
+CAPSULE: Downloading dependency org.pf4j:pf4j-update:jar:2.3.0
+
+      N E X T F L O W
+      version 22.10.8 build 5859
+      created 15-04-2023 10:05 UTC (11:05 BST)
+      cite doi:10.1038/nbt.3820
+      http://nextflow.io
