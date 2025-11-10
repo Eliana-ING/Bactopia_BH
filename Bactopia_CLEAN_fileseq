@@ -1,0 +1,22 @@
+# percorsi
+BASE=/mnt/shared/projects/niab/edellolm
+FASTQ_DIR=$BASE/01.RawData
+PREP=~/scratch/bactopia_prep
+CLEAN=$PREP/reads_merged
+mkdir -p "$CLEAN"
+
+# per ogni cartella campione (PL70_*)
+for d in "$FASTQ_DIR"/PL70_*; do
+  [ -d "$d" ] || continue
+  s=$(basename "$d")
+
+  # merge di tutte le lane R1 e R2 del campione
+  r1_out="$CLEAN/${s}_R1.fq.gz"
+  r2_out="$CLEAN/${s}_R2.fq.gz"
+
+  # se esistono più file per lane, li concateniamo
+  cat "$d"/*_L*_1.fq.gz > "$r1_out"
+  cat "$d"/*_L*_2.fq.gz > "$r2_out"
+
+  echo "Creati: $(basename "$r1_out")  $(basename "$r2_out")"
+done
