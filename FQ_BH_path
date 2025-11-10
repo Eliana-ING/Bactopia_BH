@@ -1,9 +1,9 @@
-BASE="/mnt/shared/projects/niab/edellolm"
-FASTQ_DIR="$BASE/01.RawData"        
-PREP="~/scratch/bactopia_prep"
-OUT="~/scratch/bactopia_results"
-WORK="~/scratch/bactopia_work"
-DATASETS="~/scratch/bactopia_datasets"
+BASE=/mnt/shared/projects/niab/edellolm
+FASTQ_DIR=$BASE/01.RawData
+PREP=~/scratch/bactopia_prep
+OUT=~/scratch/bactopia_results
+WORK=~/scratch/bactopia_work
+DATASETS=~/scratch/bactopia_datasets
 
-mkdir -p "$PREP" "$OUT" "$WORK" "$DATASETS"
+mkdir -p $PREP $OUT $WORK $DATASETS  #senza virgolette crea la directory li dove le abbiamo ordinato ovvero in ~/scratch/ altrimenti con le virgolette "" diciamo al computer di creare un cartella locale, impedendo al computer di accedere alla roots
 # questo script servea definire il percorso dei file e dovegli output vanno salvati.
