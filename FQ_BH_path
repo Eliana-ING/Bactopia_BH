@@ -6,3 +6,4 @@ WORK="~/scratch/bactopia_work"
 DATASETS="~/scratch/bactopia_datasets"
 
 mkdir -p "$PREP" "$OUT" "$WORK" "$DATASETS"
+# questo script servea definire il percorso dei file e dovegli output vanno salvati.
