@@ -1,0 +1,2 @@
+FASTQ_DIR="/mnt/shared/projects/niab/edellolm/01.RawData"
+find "$FASTQ_DIR" -maxdepth 2 -type f | head -n 10
