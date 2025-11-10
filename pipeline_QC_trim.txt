@@ -1,0 +1,104 @@
+cd ~/scratch/bactopia_prep
+
+# 1) Variabili percorso (input già fusi in _R1/_R2)
+cat > README_QC_TRIM_commands.txt <<'EOF'
+# === Ambiente e percorsi ===
+eval "$(/mnt/apps/users/edellolm/conda/bin/conda shell.bash hook)"
+conda activate bactopia
+
+BASE=/mnt/shared/projects/niab/edellolm
+FASTQ_DIR=$BASE/01.RawData
+PREP=~/scratch/bactopia_prep
+CLEAN=$PREP/reads_merged
+OUT=~/scratch/bactopia_results
+WORK=~/scratch/bactopia_work
+DATASETS=~/scratch/bactopia_datasets
+
+mkdir -p "$PREP" "$CLEAN" "$OUT" "$WORK" "$DATASETS" "$OUT/logs"
+
+# === Merge lane per campione => _R1/_R2 (se non già fatto) ===
+for d in "$FASTQ_DIR"/PL70_*; do
+  [ -d "$d" ] || continue
+  s=$(basename "$d")
+  mapfile -t R1 < <(ls "$d"/*_L*_1.fq.gz 2>/dev/null)
+  mapfile -t R2 < <(ls "$d"/*_L*_2.fq.gz 2>/dev/null)
+  (( ${#R1[@]} )) && cat "${R1[@]}" > "$CLEAN/${s}_R1.fq.gz"
+  (( ${#R2[@]} )) && cat "${R2[@]}" > "$CLEAN/${s}_R2.fq.gz"
+done
+
+# === (Opzionale) Crea samples.tsv per usi futuri con Bactopia ===
+OUTFOFN=$PREP/samples.tsv
+printf "sample\truntype\tgenome_size\tspecies\tr1\tr2\textra\n" > "$OUTFOFN"
+for r1 in "$CLEAN"/*_R1.fq.gz; do
+  s=$(basename "$r1" | sed 's/_R1\.fq\.gz$//')
+  r2="$CLEAN/${s}_R2.fq.gz"; [ -f "$r2" ] || continue
+  printf "%s\tpaired-end\t4500000\tBacillus halotolerans\t%s\t%s\t\n" "$s" "$r1" "$r2" >> "$OUTFOFN"
+done
+
+# === (Già fatto) Nextflow standalone compatibile con Java 11 ===
+# mkdir -p ~/bin && cd ~/bin
+# curl -L -o nextflow https://github.com/nextflow-io/nextflow/releases/download/v22.10.8/nextflow
+# chmod +x nextflow
+# echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+
+# === Script SLURM per QC + trimming (FastQC -> fastp -> FastQC -> MultiQC) ===
+cat > $PREP/trim_qc.slurm <<'EOSLURM'
+#!/bin/bash
+#SBATCH -J trimQC
+#SBATCH -p short
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=16G
+#SBATCH -o ~/scratch/bactopia_results/logs/trimqc_%j.out
+#SBATCH -e ~/scratch/bactopia_results/logs/trimqc_%j.err
+set -euo pipefail
+
+eval "$(/mnt/apps/users/edellolm/conda/bin/conda shell.bash hook)"
+conda activate bactopia
+
+RAW=~/scratch/bactopia_prep/reads_merged
+OUT=~/scratch/bactopia_results
+mkdir -p "$OUT"/{qc/fastqc_pre,qc/fastqc_post,qc/fastp,trimmed,multiqc}
+
+echo "[1/4] FastQC pre-trim"
+for r1 in "$RAW"/*_R1.fq.gz; do
+  s=$(basename "$r1" | sed 's/_R1\.fq\.gz$//'); r2="$RAW/${s}_R2.fq.gz"
+  [ -f "$r2" ] || { echo "Skip $s (manca R2)"; continue; }
+  fastqc -q -o "$OUT/qc/fastqc_pre" "$r1" "$r2"
+done
+
+echo "[2/4] fastp trimming"
+for r1 in "$RAW"/*_R1.fq.gz; do
+  s=$(basename "$r1" | sed 's/_R1\.fq\.gz$//'); r2="$RAW/${s}_R2.fq.gz"
+  [ -f "$r2" ] || continue
+  fastp -i "$r1" -I "$r2" \
+        -o "$OUT/trimmed/${s}_R1.trim.fq.gz" \
+        -O "$OUT/trimmed/${s}_R2.trim.fq.gz" \
+        --detect_adapter_for_pe \
+        --cut_front --cut_tail --cut_mean_quality 20 \
+        --length_required 50 \
+        --thread 8 \
+        --html "$OUT/qc/fastp/${s}.fastp.html" \
+        --json "$OUT/qc/fastp/${s}.fastp.json"
+done
+
+echo "[3/4] FastQC post-trim"
+for r1 in "$OUT/trimmed/"*_R1.trim.fq.gz; do
+  s=$(basename "$r1" | sed 's/_R1\.trim\.fq\.gz$//'); r2="$OUT/trimmed/${s}_R2.trim.fq.gz"
+  [ -f "$r2" ] || continue
+  fastqc -q -o "$OUT/qc/fastqc_post" "$r1" "$r2"
+done
+
+echo "[4/4] MultiQC"
+multiqc -q -o "$OUT/multiqc" "$OUT/qc"
+echo "[DONE] Report MultiQC: $OUT/multiqc/multiqc_report.html"
+EOSLURM
+
+# === Submit job ===
+chmod +x $PREP/trim_qc.slurm
+cd $PREP
+sbatch trim_qc.slurm
+
+# === Monitor ===
+squeue -u $USER
+tail -f ~/scratch/bactopia_results/logs/trimqc_*.out
+EOF
